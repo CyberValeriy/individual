@@ -17,9 +17,9 @@ let user;
 try{
     const hash = await bcrypt.hash(password,12);
     user = new User({
-    name:name,
+    name,
     password:hash,
-    email:email
+    email
 });
 await user.save();
 }catch(err){
