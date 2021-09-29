@@ -5,13 +5,10 @@ const {error} = require('../util/error');
 //PACKAGES
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
-const {validationResult} = require('express-validator');
+const {validation} = require('../util/validationError');
 
 exports.signUp = async (req,res)=>{
-const result = validationResult(req);
-if (!result.isEmpty()) {
-    return error(res, 422, result.errors[0].msg);
-}
+if(validation(req,res)) return;
 const {email,password,name} = req.body;
 let user;
 try{
@@ -26,20 +23,18 @@ await user.save();
     console.debug(err);
     return error(res,500,"Server eror!")
 }
-const token = jwt.sign({userId:user._id},process.env.JWT_SECRET);
+const token = jwt.sign({userId:user._id},process.env.JWT_SECRET,{expiresIn:"15d"});
+
 res.status(201).json({success:true,message:"User created!",token,user});
 }
 
 exports.logIn = async (req,res)=>{
-const result = validationResult(req);
-if (!result.isEmpty()) {
-return error(res, 422, result.errors[0].msg); // or one function with check in it
-}
+if(validation(req,res)) return;
 let user;
 let token;
 try{
 const {password,email} = req.body;
-user = await User.findOne({email:email});
+user = await User.findOne({email:email}).populate("categories");
 if(!user){
     return error(res,404,"User not exist!");
 }
@@ -47,7 +42,8 @@ const check =  await bcrypt.compare(password,user.password);
 if(!check){
     return error(res,404,"Invalid password!");
 }
-token = jwt.sign({userId:user._id},process.env.JWT_SECRET);
+token = jwt.sign({userId:user._id},process.env.JWT_SECRET,{expiresIn:"15d"});
+console.log(token);
 }catch(err){
     console.debug(err);
     return error(res,500,"Server error!");
@@ -55,4 +51,3 @@ token = jwt.sign({userId:user._id},process.env.JWT_SECRET);
 
 return res.status(200).json({success:true,token,message:"User fetched!",user});
 }
-//test

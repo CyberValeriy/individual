@@ -1,7 +1,10 @@
+//MODELS 
 const Category = require('../models/category');
 const User = require('../models/user');
+//FILES
 const {error} = require("../util/error");
-const {validationResult} = require('express-validator');
+const {validation} = require("../util/validationError");
+
 
 exports.getCategory = async (req,res)=>{
 const name = req.query.name || "";
@@ -19,11 +22,7 @@ try{
 }
 
 exports.deleteCategory = async (req,res)=>{
-const result = validationResult(req);
-if (!result.isEmpty()) {
-    return error(res, 422, result.errors[0].msg);
-}
-
+if(validation(req,res)) return;
 const {categoryId} = req.body;
 const {userId} = req;
     try{
@@ -37,25 +36,22 @@ const {userId} = req;
 }
 
 exports.addCategory = async (req,res)=>{
-const result = validationResult(req);
-if (!result.isEmpty()) {
-    return error(res, 422, result.errors[0].msg);
-}
-    const {name,description} = req.body;
-    const {userId} = req;
+if(validation(req,res)) return;
+const {name,description} = req.body;
+const {userId} = req;
     try{
-    const {categories} = await User.findById(userId).populate({ //add pagination
-        path:"categories",
-        match:{name:name}
-    });
-   if(categories.length > 0) return error(res,500,"Category name already in use!");
-   const category = new Category({
-        name,
-        description
-    });
-    await category.save();
-    await User.findByIdAndUpdate(userId,{$push:{categories:category._id}});
-    res.status(200).json({success:true,message:`Category was created!`});
+        const {categories} = await User.findById(userId).populate({ //add pagination
+            path:"categories",
+            match:{name:name}
+        });
+    if(categories.length > 0) return error(res,500,"Category name already in use!");
+        const category = new Category({
+            name,
+            description
+        });
+        await category.save();
+        await User.findByIdAndUpdate(userId,{$push:{categories:category._id}});
+        res.status(200).json({success:true,message:`Category was created!`});
     }catch(err){
         console.debug(err);
         return error(res,500,"Server error!");
@@ -63,14 +59,11 @@ if (!result.isEmpty()) {
 }
 
 exports.updateCategory = async (req,res)=>{
-const result = validationResult(req); //concat in single function
-if (!result.isEmpty()) {
-return error(res, 422, result.errors[0].msg);
-}
-    const {categoryId,name,description} = req.body;
+if(validation(req,res)) return;
+const {categoryId,name,description} = req.body;
     try{
-    await Category.findByIdAndUpdate(categoryId,{name,description}); //or get name/description(if not entered)from old ver of product
-    res.status(200).json({success:true,message:`Category was updated!`});
+        await Category.findByIdAndUpdate(categoryId,{name,description}); //or get name/description(if not entered)from old ver of product
+        res.status(200).json({success:true,message:`Category was updated!`});
     }catch(err){
         console.debug(err);
         return error(res,500,"Server error!");

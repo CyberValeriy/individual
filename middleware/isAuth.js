@@ -14,7 +14,7 @@ const tokenCheck = async (req,res,next) =>{
         return error(res,500,"Server error!");
     }
 
-    if(!result || !result?.userId)  return error(res,500,"Token validation failed");
+    if(!result || !result?.userId || Date.now() > result?.exp * 1000)  return error(res,500,"Token validation failed");
     req.userId = result.userId;
     next();
 }
