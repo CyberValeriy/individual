@@ -1,5 +1,6 @@
 //MODELS 
 const Transaction = require("../models/transaction");
+const Category = require("../models/category");
 //FILES
 const {error} = require("../util/error");
 const {validation} = require("../util/validationError");
@@ -24,7 +25,8 @@ exports.deleteTransaction = async (req,res)=>{
 if(validation(req,res)) return;
 const {transactionId} = req.body;
     try{
-        await Transaction.findByIdAndDelete(transactionId);
+        const tr = await Transaction.findByIdAndDelete(transactionId);
+        await Category.findByIdAndUpdate(tr.categoryId,{$pull:{transactions:transactionId}});
         res.status(200).json({success:true,message:`Transaction was deleted!`});
     }catch(err){
         console.debug(err);
@@ -46,6 +48,7 @@ try{
         date:new Date(date).toISOString()
     });
     await tr.save();
+    await Category.findByIdAndUpdate(categoryId,{$push:{transactions:tr._id}});
 }catch(err){
     console.debug(err);
     return error(res,500,"Server error!");
