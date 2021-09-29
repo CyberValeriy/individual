@@ -43,7 +43,6 @@ if(!check){
     return error(res,404,"Invalid password!");
 }
 token = jwt.sign({userId:user._id},process.env.JWT_SECRET,{expiresIn:"15d"});
-console.log(token);
 }catch(err){
     console.debug(err);
     return error(res,500,"Server error!");
