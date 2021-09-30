@@ -1,9 +1,8 @@
-const Category = require('../models/category');
 const Transaction = require('../models/transaction');
 const mongoose = require('mongoose');
 const {validation} = require("../util/validationError");
 
-exports.reportByPeriod = async (req,res)=>{
+exports.reportPeriodTotal = async (req,res)=>{
 if(validation(req,res)) return;
 const {date1,date2,type} = req.body;
 const {userId} = req;
@@ -25,4 +24,25 @@ if(req.body.categoryId){
 }
 const result = await Transaction.aggregate(options); 
 return res.status(200).json({success:true,summary:result});
+}
+
+exports.reportDays = async(req,res)=>{
+// if(validation(req,res)) return;
+const {date1,date2,type} = req.body;
+const {userId} = req;
+
+const options = [{$match:{creator:mongoose.Types.ObjectId(userId),type:type,date:{$gte:new Date(date1),$lt:new Date(date2)}}},
+    {$project:{description:"$description",value:"$value",date:"$date"}},
+    {$sort:{date:1}},
+    // {$dateToString:{
+    //     date:"$date",
+    //     format:"%Y-%m-%d" free atlas tier( 
+    // }}
+
+]
+if(req.body.categoryId){
+    options[0].$match.categoryId = mongoose.Types.ObjectId(req.body.categoryId)
+}
+const result = await Transaction.aggregate(options);
+res.status(200).json({success:true,inDays:result});
 }
