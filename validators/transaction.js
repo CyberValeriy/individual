@@ -14,4 +14,4 @@ body("categoryId").notEmpty().isString().trim().isMongoId(),
 body("type").notEmpty().isString().trim(),
 body("description").notEmpty().isString().trim(),
 body("date").notEmpty().isString().trim()
-];
+];//add date valid

@@ -4,7 +4,6 @@ exports.signUpValid = [body("email").notEmpty().isString().trim().isEmail().cust
 let result;
 try{
     result = await User.findOne({email:value});
-    console.log(result);
 }catch(err){
     return Promise.reject("Server error!");
 }

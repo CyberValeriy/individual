@@ -7,13 +7,12 @@ const {validation} = require("../util/validationError");
 
 
 exports.getCategory = async (req,res)=>{
-const name = req.query.name || "";
+const name = req.query?.name || "";
+const page = Math.abs(req.query?.page) || 1;
+const PERPAGE = 5;
 const {userId} = req;
 try{
-    const {categories} = await User.findById(userId,{categories:1,_id:0}).populate({ //add pagination
-        path:"categories",
-        match:{name:{$regex:name,$options:'i'}}
-    });
+    const categories = await Category.find({creator:userId,name:{$regex:name}}).skip((page-1)*PERPAGE).limit(PERPAGE);
     res.status(200).json({success:true,categories});
 }catch(err){
     console.debug(err);
@@ -47,7 +46,8 @@ const {userId} = req;
     if(categories.length > 0) return error(res,500,"Category name already in use!");
         const category = new Category({
             name,
-            description
+            description,
+            creator:userId
         });
         await category.save();
         await User.findByIdAndUpdate(userId,{$push:{categories:category._id}});

@@ -8,7 +8,7 @@ const isAuth = require('../middleware/isAuth');
 
 router.post('/periodTotal',isAuth,periodValid,reportPeriodTotal);
 
-router.post('/periodDays',isAuth,reportDays);
+router.post('/periodDays',isAuth,periodValid,reportDays);
 
 
 

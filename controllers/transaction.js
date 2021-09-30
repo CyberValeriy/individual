@@ -9,8 +9,10 @@ const {validation} = require("../util/validationError");
 exports.getTransactions = async (req,res)=>{ //add paginaton
 const categoryId = req.query.category || {$exists:true};
 const {userId} = req;
+const page = Math.abs(req.query?.page) || 1;
+const PERPAGE = 5;
 try{
-    const transactions = await Transaction.find({creator:userId,categoryId}).populate({
+    const transactions = await Transaction.find({creator:userId,categoryId}).skip((page-1)*PERPAGE).limit(PERPAGE).populate({
         path:"categoryId",
         select:{name:1,_id:0}
     });
@@ -25,8 +27,7 @@ exports.deleteTransaction = async (req,res)=>{
 if(validation(req,res)) return;
 const {transactionId} = req.body;
     try{
-        const tr = await Transaction.findByIdAndDelete(transactionId);
-        await Category.findByIdAndUpdate(tr.categoryId,{$pull:{transactions:transactionId}});
+        await Transaction.findByIdAndDelete(transactionId);
         res.status(200).json({success:true,message:`Transaction was deleted!`});
     }catch(err){
         console.debug(err);
