@@ -1,11 +1,14 @@
 //MODELS
 const User = require("../models/user");
+
 //FILES
 const {error} = require('../util/error');
+
 //PACKAGES
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const {validation} = require('../util/validationError');
+
 
 exports.signUp = async (req,res)=>{
 if(validation(req,res)) return;

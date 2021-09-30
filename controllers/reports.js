@@ -1,5 +1,10 @@
+//MODELS
 const Transaction = require('../models/transaction');
+
+//PACKAGES
 const mongoose = require('mongoose');
+
+//FILES
 const {validation} = require("../util/validationError");
 
 exports.reportPeriodTotal = async (req,res)=>{
