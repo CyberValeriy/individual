@@ -1,6 +1,7 @@
 //MODELS 
 const Transaction = require("../models/transaction");
 const Category = require("../models/category");
+
 //FILES
 const {error} = require("../util/error");
 const {validation} = require("../util/validationError");
@@ -26,8 +27,9 @@ try{
 exports.deleteTransaction = async (req,res)=>{
 if(validation(req,res)) return;
 const {transactionId} = req.body;
+const {userId} = req;
     try{
-        await Transaction.findByIdAndDelete(transactionId);
+        await Transaction.deleteOne({_id:transactionId,creator:userId});
         res.status(200).json({success:true,message:`Transaction was deleted!`});
     }catch(err){
         console.debug(err);
@@ -59,9 +61,10 @@ res.status(201).json({success:true,message:"Transaction added!"});
 
 exports.updateTransaction = async (req,res)=>{
 if(validation(req,res)) return;
+const {userId} = req; 
 const {transactionId,value,description,date,type} = req.body;
     try{
-        await Transaction.findByIdAndUpdate(transactionId,{value,description,type,date:new Date(date).toISOString()}); //or get name/description(if not entered)from old ver of product
+        await Transaction.updateOne({_id:transactionId,creator:userId},{value,description,type,date:new Date(date).toISOString()}); //or get name/description(if not entered)from old ver of product
         res.status(200).json({success:true,message:`Transaction was updated!`});
     }catch(err){
         console.debug(err);

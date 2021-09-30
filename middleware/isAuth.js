@@ -1,5 +1,9 @@
+//PACKAGES
 const jwt = require("jsonwebtoken");
+
+//FILES
 const {error} = require("../util/error");
+
 
 const tokenCheck = async (req,res,next) =>{
     const authHeader = req.get("Authorization");

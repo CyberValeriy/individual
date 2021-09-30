@@ -1,8 +1,13 @@
 const express = require('express');
 const router = express.Router();
 
+//CONTROLLERS
 const {getCategory,addCategory,deleteCategory,updateCategory} = require('../controllers/category');
+
+//VALIDATORS
 const {addValid,deleteValid,updateValid} = require('../validators/category');
+
+//MIDLEWARE
 const isAuth = require('../middleware/isAuth');
 
 

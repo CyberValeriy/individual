@@ -25,7 +25,7 @@ if(validation(req,res)) return;
 const {categoryId} = req.body;
 const {userId} = req;
     try{
-        const category = await Category.findByIdAndDelete(categoryId);
+        const category = await Category.deleteOne({_id:categoryId,creator:userId});
         await User.findByIdAndUpdate(userId,{$pull:{categories:categoryId}});
         res.status(200).json({success:true,message:`${category.name} was deleted!`});
     }catch(err){
@@ -61,8 +61,9 @@ const {userId} = req;
 exports.updateCategory = async (req,res)=>{
 if(validation(req,res)) return;
 const {categoryId,name,description} = req.body;
+const {userId} = req;
     try{
-        await Category.findByIdAndUpdate(categoryId,{name,description}); //or get name/description(if not entered)from old ver of product
+        await Category.findOneAndUpdate({_id:categoryId,creator:userId},{name,description}); //or get name/description(if not entered)from old ver of product
         res.status(200).json({success:true,message:`Category was updated!`});
     }catch(err){
         console.debug(err);

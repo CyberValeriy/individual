@@ -6,7 +6,7 @@ exports.addValid = [body("value").notEmpty().isNumeric().trim(),
 body("categoryId").notEmpty().isString().trim().isMongoId(),
 body("type").notEmpty().isString().trim(),
 body("description").notEmpty().isString().trim(),
-body("date").notEmpty().isString().trim()];
+body("date").notEmpty().isString().trim().isDate()];
 
 exports.updateValid = [body("transactionId").notEmpty().isString().trim().isMongoId(), //or in one valid
 body("value").notEmpty().isNumeric().trim(),
@@ -14,4 +14,4 @@ body("categoryId").notEmpty().isString().trim().isMongoId(),
 body("type").notEmpty().isString().trim(),
 body("description").notEmpty().isString().trim(),
 body("date").notEmpty().isString().trim()
-];//add date valid
+];

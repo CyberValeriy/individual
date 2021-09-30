@@ -1,8 +1,13 @@
 const express = require('express');
 const router = express.Router();
 
+//CONTROLLERS
 const {addTransaction,deleteTransaction,getTransactions,updateTransaction} = require('../controllers/transaction');
+
+//VALIDATORS
 const {addValid,deleteValid,updateValid} = require('../validators/transaction');
+
+//MIDLEWARE
 const isAuth = require('../middleware/isAuth');
 
 

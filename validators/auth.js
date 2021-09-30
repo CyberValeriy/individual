@@ -1,5 +1,6 @@
 const {body} = require('express-validator');
 const User = require('../models/user');
+
 exports.signUpValid = [body("email").notEmpty().isString().trim().isEmail().custom(async value=>{
 let result;
 try{
