@@ -1,6 +1,7 @@
 //MODELS 
 const Category = require('../models/category');
 const User = require('../models/user');
+
 //FILES
 const {error} = require("../util/error");
 const {validation} = require("../util/validationError");
